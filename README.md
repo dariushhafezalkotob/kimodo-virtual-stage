@@ -6,28 +6,41 @@ colorTo: green
 sdk: docker
 pinned: true
 license: apache-2.0
-short_description: "Browser-based multi-actor AI virtual stage powered by NVIDIA Kimodo"
+short_description: "Official NVIDIA Kimodo Viser UI & AI Virtual Stage"
 models:
 - nvidia/Kimodo-SOMA-RP-v1
 - nvidia/Kimodo-G1-RP-v1
 ---
 
-# Kimodo AI Virtual Stage - Phase 0
+# Kimodo AI Virtual Stage
 
-AI-powered browser-based virtual stage and virtual cinematography application based on NVIDIA Kimodo.
+AI-powered virtual stage application built on official NVIDIA Kimodo (`nv-tlabs/kimodo`), NVIDIA Viser (`nv-tlabs/kimodo-viser`), and NVIDIA SOMA-X (`NVlabs/SOMA-X`).
 
-## Phase 0 Status
+## Architecture & Official NVIDIA UI
 
-Phase 0 reproduces NVIDIA's official baseline interactive Kimodo demo running inside a Hugging Face Docker Space environment.
+This repository deploys the **exact official NVIDIA Kimodo Viser interface** ([https://huggingface.co/spaces/nvidia/Kimodo](https://huggingface.co/spaces/nvidia/Kimodo) & [https://research.nvidia.com/labs/sil/projects/kimodo/](https://research.nvidia.com/labs/sil/projects/kimodo/)):
+- **3D Canvas & Renderer**: Official Viser WebGL canvas with SOMA human character meshes.
+- **Interactive Controls**: End-effector 3D pose handles (hands, feet), 2D root path drawing, full-body keyframes, text prompt inputs, and timeline controls.
+- **Port 7860**: Public Viser Web UI (`kimodo_demo`).
+- **Port 9550**: Internal Text Encoder service (`kimodo_textencoder`).
 
-### Ports
-- `7860`: Public Viser 3D Web UI
-- `9550`: Internal Text Encoder (`kimodo_textencoder`)
+## Hugging Face Docker Space Deployment
 
-### Requirements
-- **Hugging Face Secret**: `HF_TOKEN` with granted access to `meta-llama/Meta-Llama-3-8B-Instruct`.
-- **GPU**: Recommended NVIDIA L40S (48 GB VRAM), minimum ~17 GB VRAM.
+1. Create a Space on Hugging Face using **Docker** SDK and **NVIDIA L40S** GPU.
+2. In Space Settings -> Secrets, configure:
+   - `HF_TOKEN`: Hugging Face User Access Token with permission for `meta-llama/Meta-Llama-3-8B-Instruct`.
+3. The Space will launch `docker/start.sh`, initializing `kimodo_textencoder` on port 9550 and serving `kimodo_demo` on port 7860.
 
-## Verification / Acceptance Test
-Prompt to verify:
-> "A person walks forward and waves with the right hand."
+## Local / Container Execution
+
+```bash
+# Clone repository
+git clone https://github.com/dariushhafezalkotob/kimodo-virtual-stage.git
+cd kimodo-virtual-stage
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Launch demo
+python3 run_demo.py
+```

@@ -1,46 +1,38 @@
-# Kimodo AI Virtual Stage - User Testing Guide
+# Official NVIDIA Kimodo Viser UI Guide
 
-Welcome to **Kimodo AI Virtual Stage**! This guide walks you through launching the interactive application locally, positioning 3D actors, generating AI motion, orchestrating performances on the master timeline, and saving/loading projects.
+This guide details launching and running the official **NVIDIA Kimodo Viser Web Application** ([https://huggingface.co/spaces/nvidia/Kimodo](https://huggingface.co/spaces/nvidia/Kimodo)).
 
 ---
 
-## 🚀 1. Launching the App
+## 🏃 Running the Official Kimodo Viser Application
 
-Run the application entrypoint from the repository root:
+### Option A: Hugging Face Docker Space (Recommended)
+1. Push this repository to your Hugging Face Docker Space with **NVIDIA L40S** GPU.
+2. Add your secret `HF_TOKEN` in Space Settings (with access to `meta-llama/Meta-Llama-3-8B-Instruct`).
+3. The Space will automatically build the environment and serve the official NVIDIA Kimodo Viser web application on port `7860`.
 
+### Option B: Local / Docker Instance
 ```bash
-cd /Users/macpro/.gemini/antigravity/scratch/kimodo-virtual-stage
-python3 app.py
+docker build -f docker/Dockerfile -t kimodo-virtual-stage .
+docker run --gpus all -p 7860:7860 -e HF_TOKEN="your_hf_token" kimodo-virtual-stage
 ```
 
-Open your browser and navigate to:
-👉 **`http://localhost:7860`**
-
 ---
 
-## 🎬 2. Directing & Testing the Virtual Stage
+## 🎨 Official UI Capabilities & Features
 
-### Step 1: Manage Actors
-- In the left sidebar under **Actors**, you will see default actors: `Actor 01` and `Actor 02`.
-- Click **+ Add** to spawn additional SOMA actors (`Actor 03`, `Actor 04`).
-- Click on any actor (`Actor 01` or `Actor 02`) to select it.
+When `kimodo_demo` launches on port `7860`, the official Viser client renders:
 
-### Step 2: Position & Rotate Actors
-- Under **Transform**, use the **Position X** and **Position Z** sliders to position your selected actor on the 3D stage grid.
-- Notice the 3D character mesh updates its position instantly in the 3D viewport canvas.
+1. **Official 3D Canvas**:
+   - SOMA human character meshes rendered with realistic joint articulation.
+   - Interactive 3D Orbit & Pan controls.
 
-### Step 3: Direct AI Motion
-- In the **Direct Motion** panel, type a natural language prompt, e.g.:
-  > `"Walk forward slowly and wave with the right hand."`
-- Click **Generate Motion**.
-- The motion is generated via Kimodo and cached as a persistent `.npz` file in `storage/motions/`.
+2. **3D Constraint Controls**:
+   - **Hand & Foot End-Effectors**: 3D interactive handles to set target keyframe locations for left hand, right hand, left foot, and right foot.
+   - **Full-Body Keyframe Widgets**: Pose keyframe controls.
+   - **Root Waypoints & 2D Root Path**: Draw 2D trajectory paths for the character to follow.
 
-### Step 4: Master Timeline Synchronous Playback
-- In the bottom **Master Timeline** panel:
-  - Click **▶ Play All**.
-  - Watch all actors execute their assigned performance simultaneously on the 3D stage grid.
-  - Click **⏸ Pause** or **⏹ Stop** at any time.
-
-### Step 5: Save & Load Project
-- Click **Save Project** in the top navigation bar to write your master scene configuration to `storage/projects/`.
-- Click **Load Project** to restore your exact scene arrangement and motion assignments anytime!
+3. **Motion Generation & Timeline**:
+   - Text prompt input box for diffusion guidance.
+   - Sample generation selector.
+   - Keyframe timeline track view for scrubbing and playing back generated motion sequences.
