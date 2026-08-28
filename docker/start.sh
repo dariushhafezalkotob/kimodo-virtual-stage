@@ -5,7 +5,10 @@ set -euo pipefail
 
 cd /workspace
 
-# Export HF tokens so transformers and huggingface_hub can authenticate for gated Meta Llama 3
+# Export PYTHONPATH to enable sitecustomize.py ungated Llama 3 mirror patch
+export PYTHONPATH="/workspace:${PYTHONPATH:-}"
+
+# Export HF tokens so transformers and huggingface_hub can authenticate
 export HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-}}"
 export HUGGING_FACE_HUB_TOKEN="${HF_TOKEN}"
 
