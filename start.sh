@@ -7,13 +7,12 @@ cd /workspace
 
 export PYTHONPATH="/workspace:${PYTHONPATH:-}"
 
-# Export HF tokens so transformers and huggingface_hub can authenticate
+# Export HF tokens
 export HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-}}"
 export HUGGING_FACE_HUB_TOKEN="${HF_TOKEN}"
 
 # Pre-download checkpoints
 python - <<'PY'
-import sitecustomize
 import os
 from huggingface_hub import snapshot_download
 token = os.environ.get("HF_TOKEN") or None
@@ -22,9 +21,9 @@ snapshot_download("nvidia/Kimodo-G1-RP-v1", token=token)
 print("Checkpoint download complete.")
 PY
 
-# Launch text encoder with patch explicitly loaded first
-echo "Starting text-encoder on :9550 ..."
-python3 -c "import sitecustomize; from kimodo.scripts.run_text_encoder_server import main; main()" &
+# Launch ungated text encoder on port 9550
+echo "Starting ungated text-encoder on :9550 ..."
+python3 run_ungated_text_encoder.py &
 TEXT_ENCODER_PID=$!
 
 cleanup() {
