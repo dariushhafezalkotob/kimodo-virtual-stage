@@ -5,11 +5,17 @@ set -euo pipefail
 
 cd /workspace
 
+# Export HF tokens so transformers and huggingface_hub can authenticate for gated Meta Llama 3
+export HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-}}"
+export HUGGING_FACE_HUB_TOKEN="${HF_TOKEN}"
+
 # Pre-download checkpoints
 python - <<'PY'
+import os
 from huggingface_hub import snapshot_download
-snapshot_download("nvidia/Kimodo-SOMA-RP-v1")
-snapshot_download("nvidia/Kimodo-G1-RP-v1")
+token = os.environ.get("HF_TOKEN") or None
+snapshot_download("nvidia/Kimodo-SOMA-RP-v1", token=token)
+snapshot_download("nvidia/Kimodo-G1-RP-v1", token=token)
 print("Checkpoint download complete.")
 PY
 
