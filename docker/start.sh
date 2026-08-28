@@ -5,7 +5,6 @@ set -euo pipefail
 
 cd /workspace
 
-# Export PYTHONPATH to enable sitecustomize.py ungated Llama 3 mirror patch
 export PYTHONPATH="/workspace:${PYTHONPATH:-}"
 
 # Export HF tokens so transformers and huggingface_hub can authenticate
@@ -14,6 +13,7 @@ export HUGGING_FACE_HUB_TOKEN="${HF_TOKEN}"
 
 # Pre-download checkpoints
 python - <<'PY'
+import sitecustomize
 import os
 from huggingface_hub import snapshot_download
 token = os.environ.get("HF_TOKEN") or None
@@ -22,9 +22,9 @@ snapshot_download("nvidia/Kimodo-G1-RP-v1", token=token)
 print("Checkpoint download complete.")
 PY
 
-# Launch text encoder
+# Launch text encoder with patch explicitly loaded first
 echo "Starting text-encoder on :9550 ..."
-kimodo_textencoder &
+python3 -c "import sitecustomize; from kimodo.scripts.run_text_encoder_server import main; main()" &
 TEXT_ENCODER_PID=$!
 
 cleanup() {

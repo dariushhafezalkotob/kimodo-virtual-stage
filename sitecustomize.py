@@ -7,7 +7,7 @@ import sys
 import os
 
 def _rewrite(repo_id):
-    if isinstance(repo_id, str) and repo_id == "meta-llama/Meta-Llama-3-8B-Instruct":
+    if isinstance(repo_id, str) and "meta-llama/Meta-Llama-3-8B-Instruct" in repo_id:
         return "NousResearch/Meta-Llama-3-8B-Instruct"
     return repo_id
 
@@ -44,7 +44,7 @@ try:
     huggingface_hub.hf_hub_download = _patched_hf_download
     huggingface_hub.file_download.hf_hub_download = _patched_file_download
     huggingface_hub.snapshot_download = _patched_snapshot_download
-except Exception as e:
+except Exception:
     pass
 
 # 2. Patch transformers
@@ -71,5 +71,5 @@ try:
             return _orig_config_get_dict(_rewrite(pretrained_model_name_or_path), *args, **kwargs)
         transformers.configuration_utils.PretrainedConfig.get_config_dict = _patched_config_get_dict
 
-except Exception as e:
+except Exception:
     pass

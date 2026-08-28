@@ -34,6 +34,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install --upgrade pip \
  && python -m pip install -r requirements.txt;
 
+# Copy sitecustomize.py directly into Python system dist-packages
+COPY sitecustomize.py /usr/local/lib/python3.10/dist-packages/sitecustomize.py
+
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
