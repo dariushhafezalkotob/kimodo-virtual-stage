@@ -2,13 +2,14 @@
 """
 Ungated Text Encoder Server for Kimodo AI Virtual Stage.
 Directly instantiates LLM2VecEncoder using the ungated NousResearch/Meta-Llama-3-8B-Instruct repository.
-Configured to run on CPU by default to preserve 100% of GPU VRAM for Kimodo motion diffusion model.
+Uses bfloat16 precision to fit comfortably in memory.
 """
 import os
 import sys
 import argparse
 import numpy as np
 import gradio as gr
+import torch
 
 from kimodo.model.llm2vec.llm2vec_wrapper import LLM2VecEncoder
 from kimodo.scripts.gradio_theme import get_gradio_theme
@@ -43,12 +44,12 @@ def main():
     os.makedirs(tmp_folder, exist_ok=True)
 
     device = os.getenv("TEXT_ENCODER_DEVICE", "cpu")
-    dtype = "float32" if device == "cpu" else "bfloat16"
+    dtype = "bfloat16"
 
-    print("=================================================================")
-    print(f"Launching Ungated LLM2Vec Text Encoder on port 9550 (device={device})...")
-    print("Base Model: NousResearch/Meta-Llama-3-8B-Instruct (Ungated)")
-    print("=================================================================")
+    print("=================================================================", flush=True)
+    print(f"Loading Ungated LLM2Vec Text Encoder on {device} (dtype={dtype})...", flush=True)
+    print("Base Model: NousResearch/Meta-Llama-3-8B-Instruct (Ungated)", flush=True)
+    print("=================================================================", flush=True)
 
     text_encoder = LLM2VecEncoder(
         base_model_name_or_path="NousResearch/Meta-Llama-3-8B-Instruct",
@@ -57,6 +58,9 @@ def main():
         llm_dim=4096,
         device=device,
     )
+
+    print("LLM2Vec Model loaded successfully into memory!", flush=True)
+    print(f"Starting Gradio service on http://{server_name}:{server_port} ...", flush=True)
 
     theme, css = get_gradio_theme()
     demo_wrapper_fn = DemoWrapper(text_encoder, tmp_folder)

@@ -5,6 +5,7 @@ set -euo pipefail
 
 cd /workspace
 
+export PYTHONUNBUFFERED=1
 export PYTHONPATH="/workspace:${PYTHONPATH:-}"
 
 # Optimize PyTorch CUDA memory allocation
@@ -24,7 +25,7 @@ from huggingface_hub import snapshot_download
 token = os.environ.get("HF_TOKEN") or None
 snapshot_download("nvidia/Kimodo-SOMA-RP-v1", token=token)
 snapshot_download("nvidia/Kimodo-G1-RP-v1", token=token)
-print("Checkpoint download complete.")
+print("Checkpoint download complete.", flush=True)
 PY
 
 # Launch ungated text encoder on CPU on port 9550
@@ -42,7 +43,7 @@ trap cleanup EXIT
 echo "Waiting for text-encoder health ..."
 for i in $(seq 1 1200); do
   if curl -fsS "http://127.0.0.1:9550/" >/dev/null 2>&1; then
-    echo "Text-encoder is up."
+    echo "Text-encoder is up and healthy on port 9550."
     break
   fi
   sleep 1
