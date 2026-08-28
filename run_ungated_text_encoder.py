@@ -2,7 +2,7 @@
 """
 Ungated Text Encoder Server for Kimodo AI Virtual Stage.
 Directly instantiates LLM2VecEncoder using the ungated NousResearch/Meta-Llama-3-8B-Instruct repository.
-Completely bypasses all gated model permissions and 403 Forbidden errors.
+Configured to run on CPU by default to preserve 100% of GPU VRAM for Kimodo motion diffusion model.
 """
 import os
 import sys
@@ -42,17 +42,20 @@ def main():
     tmp_folder = os.getenv("TEXT_ENCODER_TMP_FOLDER", DEFAULT_TMP_FOLDER)
     os.makedirs(tmp_folder, exist_ok=True)
 
+    device = os.getenv("TEXT_ENCODER_DEVICE", "cpu")
+    dtype = "float32" if device == "cpu" else "bfloat16"
+
     print("=================================================================")
-    print("Launching Ungated LLM2Vec Text Encoder on port 9550...")
+    print(f"Launching Ungated LLM2Vec Text Encoder on port 9550 (device={device})...")
     print("Base Model: NousResearch/Meta-Llama-3-8B-Instruct (Ungated)")
     print("=================================================================")
 
     text_encoder = LLM2VecEncoder(
         base_model_name_or_path="NousResearch/Meta-Llama-3-8B-Instruct",
         peft_model_name_or_path="McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-supervised",
-        dtype="bfloat16",
+        dtype=dtype,
         llm_dim=4096,
-        device="auto",
+        device=device,
     )
 
     theme, css = get_gradio_theme()

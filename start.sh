@@ -7,6 +7,12 @@ cd /workspace
 
 export PYTHONPATH="/workspace:${PYTHONPATH:-}"
 
+# Optimize PyTorch CUDA memory allocation
+export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
+
+# Run text encoder on CPU to preserve 100% of GPU VRAM for Kimodo motion diffusion model
+export TEXT_ENCODER_DEVICE="cpu"
+
 # Export HF tokens
 export HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-}}"
 export HUGGING_FACE_HUB_TOKEN="${HF_TOKEN}"
@@ -21,8 +27,8 @@ snapshot_download("nvidia/Kimodo-G1-RP-v1", token=token)
 print("Checkpoint download complete.")
 PY
 
-# Launch ungated text encoder on port 9550
-echo "Starting ungated text-encoder on :9550 ..."
+# Launch ungated text encoder on CPU on port 9550
+echo "Starting ungated text-encoder on CPU :9550 ..."
 python3 run_ungated_text_encoder.py &
 TEXT_ENCODER_PID=$!
 
@@ -46,6 +52,6 @@ for i in $(seq 1 1200); do
   fi
 done
 
-# Launch public Viser demo
+# Launch public Viser demo on GPU
 echo "Starting demo on :7860 ..."
 exec kimodo_demo
