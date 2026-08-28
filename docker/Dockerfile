@@ -3,8 +3,8 @@
 
 # Hugging Face Spaces Docker template for Kimodo Virtual Stage.
 # Runs BOTH:
-# - kimodo_textencoder (Gradio on 9550, internal)
-# - kimodo_demo        (Viser UI on 7860, public)
+# - run_ungated_text_encoder.py (Gradio on 9550, internal)
+# - kimodo_demo                 (Viser UI on 7860, public)
 #
 FROM nvcr.io/nvidia/pytorch:24.10-py3
 
@@ -33,6 +33,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=secret,id=GITHUB_TOKEN,mode=0444,required=false \
     python -m pip install --upgrade pip \
  && python -m pip install -r requirements.txt;
+
+# Copy all repository files into /workspace
+COPY . /workspace
 
 # Copy sitecustomize.py directly into Python system dist-packages
 COPY sitecustomize.py /usr/local/lib/python3.10/dist-packages/sitecustomize.py
